@@ -3,9 +3,9 @@ package miscallaneous;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Random;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -20,70 +20,74 @@ public class BalloonGame {
 		JPanel panel = createGamePanel();
 		Balloon balloon = Balloon.createBalloon(frame, panel);
 		balloon.attachBalloon(panel);
+		balloon.addActionListener(frame, panel);
 		frame.add(panel, BorderLayout.CENTER);
 		frame.pack();
 		frame.setVisible(true);
 	}
-	
-	static JFrame createMainWindow() {
+
+	public static JFrame createMainWindow() {
 		JFrame frame = new JFrame("Balloon Game");
 		frame.setSize(800, 800);
 		frame.setLayout(new BorderLayout());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		return frame;
 	}
-	
-	static JPanel createGamePanel() {
+
+	public static JPanel createGamePanel() {
 		JPanel panel = new JPanel();
-		panel.setLayout(new GridLayout(10, 10));
+		panel.setLayout(null);
 		panel.setPreferredSize(new Dimension(800, 800));
 		panel.setBackground(Color.DARK_GRAY);
 		return panel;
 	}
 }
 
-class GameLayout {
-	
-	private final int BUTTON_WIDTH = 50;
-	private final int BUTTON_HEIGHT = 50;
-	
-	public GameLayout(JFrame frame) {
-		
-	}
-	
-	private void setMainWindowListener(JFrame frame) {
-		
-	}
-	
-}
-
 class Balloon {
-	
 	private JButton button;
-	
+
 	private Balloon(JButton button) {
 		this.button = button;
+		button.setLocation(100, 100);
+	}
+
+	public void setBalloonPosition(Dimension dimension) {
+		this.button.setLocation((int) dimension.getWidth(), (int) dimension.getHeight());
 	}
 	
-	void attachBalloon(JPanel panel) {
-		panel.add(this.button);
+	public static Dimension createBounds(int panelWidth, int panelHeight) {
+		return new Dimension((panelWidth - 100), (panelHeight - 100));
 	}
 	
-	static Balloon createBalloon(JFrame master, JPanel parent) {
-		Icon icn = new ImageIcon("C:\\Users\\luvaidc\\Pictures\\balloon.jpg");
-		JButton button = new JButton(icn);
-		button.addActionListener(new ActionListener() {
+	public void getBalloonPos(Dimension dimension) {
+		Random rand = new Random(System.currentTimeMillis());
+		int xAxis = (int) dimension.getWidth();
+		int yAxis = (int) dimension.getHeight();
+		dimension.setSize(rand.nextInt(xAxis - 100), rand.nextInt(yAxis - 100));
+	}
+	
+	public void addActionListener(JFrame master, JPanel parent) {
+		this.button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
-				master.setVisible(false);
-				parent.remove(button);
-				master.setVisible(true);
+				Dimension dimension = createBounds(parent.getWidth(), parent.getHeight());
+				getBalloonPos(dimension);
+				setBalloonPosition(dimension);
 			}
 		});
+	}
+
+	public void attachBalloon(JPanel panel) {
+		panel.add(this.button);
+	}
+
+	public static Balloon createBalloon(JFrame master, JPanel parent) {
+		Icon icn = new ImageIcon("C:\\Users\\luvaidc\\Pictures\\balloon.jpg");
+		JButton button = new JButton(icn);
 		button.setBackground(Color.DARK_GRAY);
-		button.setSize(50, 50);
+		button.setSize(new Dimension(100, 100));
 		button.setOpaque(true);
 		button.setVisible(true);
 		return new Balloon(button);
 	}
-	
+
 }
